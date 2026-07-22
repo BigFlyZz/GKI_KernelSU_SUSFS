@@ -301,14 +301,6 @@ CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
                 self._chdir(common_dir)
                 self._run_cmd(f"patch -p1 --fuzz=3 < {patch_file}", check=False)
                 self._chdir(self.work_dir)
-        # Apply KernelSU-side susfs enablement (defines CONFIG_KSU_SUSFS Kconfig + Kbuild objs)
-        ksu_susfs_patch = self.susfs_dir / "kernel_patches" / "KernelSU" / "10_enable_susfs_for_ksu.patch"
-        ksu_dir = self.work_dir / "KernelSU"
-        if ksu_susfs_patch.exists() and ksu_dir.exists():
-            self._run_cmd(f"cp {ksu_susfs_patch} {ksu_dir}/", check=False)
-            self._chdir(ksu_dir)
-            self._run_cmd(f"patch -p1 --fuzz=3 < {ksu_dir}/10_enable_susfs_for_ksu.patch", check=False)
-            self._chdir(self.work_dir)
 
     def apply_sukisu_patches(self):
         logger.info("=== 应用 SukiSU 补丁 ===")
