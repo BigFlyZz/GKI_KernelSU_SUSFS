@@ -250,7 +250,8 @@ CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
         self._chdir(self.work_dir)
         setup_url = (f"https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/{self.config.kernelsu_commit}/kernel/setup.sh"
                     if self.config.kernelsu_commit else KSU_REPO_CONFIG["setup_script"])
-        self._run_cmd(f"curl -LSs {setup_url} | bash -s builtin", check=False)
+        ksu_ref = self.config.kernelsu_commit or "builtin"
+        self._run_cmd(f"curl -LSs {setup_url} | bash -s {ksu_ref}", check=False)
         if self.config.kernelsu_commit:
             ksu_dir = self.work_dir / "KernelSU"
             if ksu_dir.exists():
