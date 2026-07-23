@@ -301,20 +301,6 @@ CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
                 self._chdir(common_dir)
                 self._run_cmd(f"patch -p1 --fuzz=3 < {patch_file}", check=False)
                 self._chdir(self.work_dir)
-        # KernelSU-side susfs enablement — only when driver lacks susfs (e.g. pinned stable/main).
-        # On builtin branch susfs already exists → skip to avoid redefinition.
-        ksu_dir = self.work_dir / "KernelSU"
-        ksu_susfs_patch = self.susfs_dir / "kernel_patches" / "KernelSU" / "10_enable_susfs_for_ksu.patch"
-        try:
-            already = (ksu_dir / "kernel" / "selinux" / "selinux.c").read_text().find("susfs") >= 0
-        except Exception:
-            already = False
-        if ksu_susfs_patch.exists() and ksu_dir.exists() and not already:
-            self._run_cmd(f"cp {ksu_susfs_patch} {ksu_dir}/", check=False)
-            self._chdir(ksu_dir)
-            self._run_cmd(f"patch -p1 --fuzz=3 < {ksu_dir}/10_enable_susfs_for_ksu.patch", check=False)
-            self._chdir(self.work_dir)
-
     def apply_sukisu_patches(self):
         logger.info("=== 应用 SukiSU 补丁 ===")
         self._chdir(self.work_dir / "common")
