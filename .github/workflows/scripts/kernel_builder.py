@@ -259,6 +259,16 @@ CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
                 self._run_cmd(f"git checkout {self.config.kernelsu_commit}", check=False)
                 self._chdir(self.work_dir)
 
+        # Trust custom .pr manager signature (0x2e0 / 85b331ec) so the version-matched .pr manager is accepted
+        apk_sign = self.work_dir / "KernelSU" / "kernel" / "manager" / "apk_sign.c"
+        if apk_sign.exists():
+            t = apk_sign.read_text()
+            if "85b331ec" not in t:
+                t = t.replace("} apk_sign_keys[] = {\n",
+                              "} apk_sign_keys[] = {\n    { 0x2e0, \"85b331ec5ebed28e6efb0e1d2e13a1259547c60dc48623fdb662702bd25d5943\" }, // pr-manager\n")
+                apk_sign.write_text(t)
+                logger.info("=== trusted custom .pr manager signature ===")
+
     def add_bbg(self):
         if not self.config.use_bbg:
             return
